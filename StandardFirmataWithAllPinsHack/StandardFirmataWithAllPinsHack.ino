@@ -47,7 +47,7 @@
 #define REGISTER_NOT_SPECIFIED -1
 
 //My Custom Command per https://github.com/ms-iot/remote-wiring/blob/develop/advanced.md :
-#define ALL_PINS_COMMAND 0x42 
+#define ALL_PINS_COMMAND 0x42
 
 /*==============================================================================
  * GLOBAL VARIABLES
@@ -174,14 +174,23 @@ void checkDigitalInputs(void)
   if (TOTAL_PORTS > 15 && reportPINs[15]) outputPort(15, readPort(15, portConfigInputs[15]), false);
 }
 
+
+// -----------------------------------------------------------------------------
+/* Bret's custom function to send a string as a message.
+ */
+void sendFirmataMessage(String message) {
+  char messageBuff[80];
+  message.toCharArray(messageBuff,80);
+  Firmata.sendString(messageBuff);
+}
+
 // -----------------------------------------------------------------------------
 /* sets the pin mode to the correct state and sets the relevant bits in the
  * two bit-arrays that track Digital I/O and PWM status
  */
 void setPinModeCallback(byte pin, int mode)
 {
-  
-  Firmata.sendString("Setting Pin Mode"); // TODO: put error msgs in EEPROM
+  //sendFirmataMessage("Setting Pin " + String(pin) + " to Mode " + String(mode));
   
   if (pinConfig[pin] == I2C && isI2CEnabled && mode != I2C) {
     // disable i2c so pins can be used for other functions
@@ -338,50 +347,13 @@ void sysexCallback(byte command, byte argc, byte *argv)
   byte slaveRegister;
   byte data;
   unsigned int delayTime;
+  
+  sendFirmataMessage("sysexCallback Started on Arduino");
 
   switch (command) {
     
     case ALL_PINS_COMMAND:
-
-      Firmata.sendString("ALL_PINS_COMMAND Received on the Arduino");
-
-      if( argc == 1 ) //verify we received the whole message
-      {
-       
-        
-        //the MSB is always sent in the LSB position 2nd byte
-        byte val;
-        if( argv[0] == 1 )
-        {
-            val = HIGH;
-        }
-        else
-        {
-            val = LOW;
-        }
-        
-        //Manually set pin 13 
-        digitalWrite(13,val);
-        
-        if(val == HIGH){
-          Firmata.sendString("Setting all pins HIGH");
-        }
-        else {
-          Firmata.sendString("Setting all pins LOW");
-        }
-        
-
-  
-        //set the pins! On many Arduino devices (Uno, Leo, Yun, etc) there are 14 digital pins from 0 to 13.
-        for( byte i = 0; i < 13; ++i )
-        {
-            digitalWrite( i, val );
-        }
-      }
-
-      Firmata.sendString("ALL_PINS_COMMAND Complete on the Arduino");
-
-      //don't forget to break your case statement, or the code will continue to execute the statement below!
+      sendFirmataMessage("ALL_PINS_COMMAND Received on Arduino!");
       break;
     
     case I2C_REQUEST:

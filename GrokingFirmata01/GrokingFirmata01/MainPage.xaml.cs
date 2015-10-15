@@ -104,17 +104,24 @@ namespace GrokingFirmata01
       }
 
       await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, new Windows.UI.Core.DispatchedHandler(() => {
-        OnButton.IsEnabled = true;
-        OffButton.IsEnabled = true;
+
+        OnButtonDigitalWrite.IsEnabled = true;
+        OffButtonDigitalWrite.IsEnabled = true;
+
       }));
 
     }
 
     private void Firmata_FirmataConnectionReady()
     {
-      ////Enable the buttons
-      //OnButton.IsEnabled = true;
-      //OffButton.IsEnabled = true;
+      OnButtonSysex.IsEnabled = true;
+      OffButtonSysex.IsEnabled = true;
+
+      OnButtonSysexV2.IsEnabled = true;
+      OffButtonSysexV2.IsEnabled = true;
+
+      OnButtonPorts.IsEnabled = true;
+      OffButtonPorts.IsEnabled = true;
     }
 
     void toggleAllDigitalPinsIndividually(bool setPinsHigh)
@@ -126,18 +133,33 @@ namespace GrokingFirmata01
       }
     }
 
-    private void OnButton_Click(object sender, RoutedEventArgs e)
+    private void Button_Click(object sender, RoutedEventArgs e)
     {
-      toggleAllDigitalPinsIndividually(true);
-      //toggleAllDigitalPins(true);
-      //toggleAllDigitalPinsWithPorts(true);
-    }
+      string button = (sender as Button).Name;
 
-    private void OffButton_Click(object sender, RoutedEventArgs e)
-    {
-      toggleAllDigitalPinsIndividually(false);
-      //toggleAllDigitalPins(false);
-      //toggleAllDigitalPinsWithPorts(false);
+      switch (button)
+      {
+        case "OnButtonSysex":
+        case "OffButtonSysex":
+          toggleAllDigitalPins(button == "OnButtonSysex");
+          break;
+
+        case "OnButtonSysexV2":
+        case "OffButtonSysexV2":
+          toggleAllDigitalPinsV2(button == "OnButtonSysexV2");
+          break;
+
+        case "OnButtonPorts":
+        case "OffButtonPorts":
+          toggleAllDigitalPinsWithPorts(button == "OnButtonPorts");
+          break;
+
+        case "OnButtonDigitalWrite":
+        case "OffButtonDigitalWrite":
+          toggleAllDigitalPinsIndividually(button == "OnButtonDigitalWrite");
+          break;
+      }
+
     }
 
     public void toggleAllDigitalPins(bool setPinsHigh)
@@ -155,7 +177,25 @@ namespace GrokingFirmata01
       }
 
       //invoke the sendSysex command with ALL_PINS_COMMAND and our data payload as an IBuffer
+      //firmata.@lock();
       firmata.sendSysex(ALL_PINS_COMMAND, new byte[] { b }.AsBuffer());
+      //firmata.@unlock();
+    }
+
+    public void toggleAllDigitalPinsV2(bool setPinsHigh)
+    {
+      //a DataWriter object uses an IBuffer as its backing storage
+      //we'll write our data to this object and detach the buffer to invoke sendSysex()
+      Windows.Storage.Streams.DataWriter writer = new Windows.Storage.Streams.DataWriter();
+
+      //we're defining our own command, so we're free to encode it how we want.
+      //let's send a '1' if we want the pins HIGH, and a 0 for LOW
+      writer.WriteByte((byte)(setPinsHigh ? 1 : 0));
+
+      //invoke the sendSysex command with ALL_PINS_COMMAND and our data payload as an IBuffer
+      //firmata.@lock();
+      firmata.sendSysex(ALL_PINS_COMMAND, writer.DetachBuffer());
+      //firmata.@unlock();
     }
 
     public void toggleAllDigitalPinsWithPorts(bool setPinsHigh)

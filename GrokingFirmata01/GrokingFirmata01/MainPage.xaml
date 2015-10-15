@@ -13,14 +13,28 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     
-    <Button x:Name="OnButton" Content="ON" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="50" Click="OnButton_Click" IsEnabled="False" />
-    <Button x:Name="OffButton" Content="OFF" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="50" Click="OffButton_Click" IsEnabled="False" />
+    <Button x:Name="OnButtonSysex" Content="Sysex ON" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" />
+    <Button x:Name="OffButtonSysex" Content="Sysex OFF" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" Tag="OffSysex" />
 
-    <ListView x:Name="MessageList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{x:Bind Messages, Mode=OneWay}" FontFamily="Consolas" FontSize="8">
+    <Button x:Name="OnButtonSysexV2" Content="Sysex V2 ON" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" />
+    <Button x:Name="OffButtonSysexV2" Content="Sysex V2 OFF" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" Tag="OffSysex" />
+
+    <Button x:Name="OnButtonPorts" Content="Ports ON" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" />
+    <Button x:Name="OffButtonPorts" Content="Ports OFF" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" Tag="OffSysex" />
+
+
+    <Button x:Name="OnButtonDigitalWrite" Content="DigitalWrite ON" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" />
+    <Button x:Name="OffButtonDigitalWrite" Content="DigitalWrite OFF" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Click="Button_Click" IsEnabled="False" Tag="OffSysex" />
+
+
+    <ListView x:Name="MessageList" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{x:Bind Messages, Mode=OneWay}" FontFamily="Consolas" FontSize="8">
       <ListView.HeaderTemplate>
         <DataTemplate>
           <TextBlock Text="Firmata Messages (Most Recent First):" FontSize="16" />
